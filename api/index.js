@@ -48,3 +48,9 @@ app.get('/api', (req, res) => {
 
 // EXPORTAÇÃO CORRETA PARA VERCEL
 module.exports = app;
+
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => {
+  console.log(`Servidor rodando na porta ${port}`);
+});
