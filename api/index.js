@@ -45,3 +45,8 @@ app.get('/api', (req, res) => {
 });
 
 module.exports = app;
+const server = app;
+
+module.exports = (req, res) => {
+  return server(req, res);
+};
