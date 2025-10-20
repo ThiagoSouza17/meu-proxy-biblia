@@ -1,12 +1,15 @@
 // api/index.js
 
+// Importações
+require('dotenv').config(); // Carrega variáveis do .env
 const express = require('express');
 const fetch = require('node-fetch');
 const cors = require('cors');
 
 const app = express();
-app.use(cors());
+app.use(cors()); // Permite acesso CORS
 
+// Rota principal da API - acessível via /api/biblia
 app.get('/api/biblia', async (req, res) => {
   const { livro, capitulo } = req.query;
   const VERSAO = 'nvi';
@@ -18,10 +21,17 @@ app.get('/api/biblia', async (req, res) => {
     });
   }
 
+  // Monta a URL da API externa
   const externalApiUrl = `https://www.abibliadigital.com.br/api/verses/${VERSAO}/${livro}/${capitulo}`;
 
   try {
-    const response = await fetch(externalApiUrl);
+    const response = await fetch(externalApiUrl, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${process.env.BIBLIA_TOKEN}`
+      }
+    });
+
     if (!response.ok) {
       let errorData = {};
       try {
@@ -38,7 +48,7 @@ app.get('/api/biblia', async (req, res) => {
   }
 });
 
-// Rota raiz opcional
+// Rota raiz de verificação
 app.get('/api', (req, res) => {
   res.json({
     status: 'Proxy da Bíblia ativo',
@@ -46,11 +56,8 @@ app.get('/api', (req, res) => {
   });
 });
 
-// EXPORTAÇÃO CORRETA PARA VERCEL
-module.exports = app;
-
+// Inicia o servidor na porta definida pelo Railway ou localmente
 const port = process.env.PORT || 3000;
-
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
 });
